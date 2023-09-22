@@ -1,6 +1,6 @@
-keeper-bench-benchmarking/keeper-bench
-keeper-bench-benchmarking/keeper-bench-new
-keeper-bench-benchmarking/keeper-bench-mac-m1
+keeper-bench
+keeper-bench-new
+keeper-bench-mac-m1
 
 logs/
 cluster_*
