@@ -1,5 +1,5 @@
 experiment:
-  num_repeat: 5
+  num_repeat: 3
   config_concurrency: [3, 30, 300]
   config_iterations: [10000, 40000, 160000, 640000, 2560000, 10240000] # 10000, 20000, 40000, 80000, 160_000, 320_000, 640_000, 1_280_000, 6_400_000
   workload_file: ["multi_write_70_pct.yaml.jinja"]
