@@ -5,7 +5,9 @@ keeper-bench-mac-m1
 logs/
 cluster_*
 .vscode
-outputs
+outputs/
+
+.DS_Store
 
 # exclude everything
 cluster/*
