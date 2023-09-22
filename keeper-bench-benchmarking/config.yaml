@@ -1,0 +1,46 @@
+experiment:
+  num_repeat: 5
+  config_concurrency: [3, 30, 300]
+  config_iterations: [10000, 40000, 160000, 640000, 2560000, 10240000] # 10000, 20000, 40000, 80000, 160_000, 320_000, 640_000, 1_280_000, 6_400_000
+  workload_file: ["multi_write_70_pct.yaml.jinja"]
+keeper:
+  host_info: "default" # name of host
+  keeper_type: ["zookeeper", "chkeeper"]
+  keeper_count: 3
+  resources:
+    - "keeper_cpu": 1
+      "keeper_memory": "2048m"
+      "keeper_jvm_memory": "2048m" # 90% 
+    - "keeper_cpu": 3
+      "keeper_memory": "2048m"
+      "keeper_jvm_memory": "1843m"
+    - "keeper_cpu": 6
+      "keeper_memory": "6144m"
+      "keeper_jvm_memory": "5529m"
+    - "keeper_cpu": 16
+      "keeper_chk_container_memory": "6144m" # chk container
+      "keeper_zk_container_memory": "7372m" # zk container, 20% more from zk_jvm_memory
+      "keeper_zk_jvm_memory": "6144m"
+  no_keeper_prometheus_metric: true # change back to false to capture prom metrics
+environment:
+  auto_keeper_ports: true # port number will increase sequentially e.g. 19181, 19182, 19183 ...
+  chkeeper_ports: [19181]
+  zookeper_ports: [12181]
+
+# TODO
+# - add flags to properties
+# - memory for container and jvm
+
+# JVMFLAGS: "-Xmx{{ keeper_jvm_memorys[k] }} -Xms{{ keeper_jvm_memorys[k] }} -XX:+AlwaysPreTouch -XX:MaxGCPauseMillis=50"
+
+# - MALLOC_CONF=background_thread:true,dirty_decay_ms:1000,muzzy_decay_ms:1000
+
+# select min(prometheus_ts) as ts_min, max(prometheus_ts) as ts_max, dateDiff('second', ts_min, ts_max) AS runtime_seconds from keeper_bench_metric where benchmark_id = 'd7e78bb7-99c0-4750-8223-5a22eac84e7c'
+
+# NUM_REPEAT
+# CONFIG_CONCURRENCY
+# CONFIG_ITERATIONS
+# CPU_MEMORY_JVM
+# KEEPER_TYPE
+
+

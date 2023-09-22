@@ -1,0 +1,24 @@
+for NUM_REPEAT in {1..10}
+do
+    for CONFIG_CONCURRENCY in 3 10 20 40 80 100 200 500 1000
+    do
+        for CONFIG_ITERATIONS in 10000 20000 40000 80000 160000 320000 640000 1280000
+        do
+            for CPU_MEMORY in "16 6144m"
+            do
+                for KEEPER_TYPE in "zookeeper" "chkeeper"
+                do
+                    set -- $CPU_MEMORY
+                    python3 clickhouse-docker-cluster/generate.py --cluster-directory cluster_1 --shard 0 --replica 0 --keeper-type $KEEPER_TYPE --keeper-count 3 --cpu-keeper $1 --memory-keeper $2
+                    python3 clickhouse-docker-cluster/docker-compose.py --cluster-directory cluster_1 --action clean
+                    python3 clickhouse-docker-cluster/docker-compose.py --cluster-directory cluster_1 --action up
+                    sleep 5
+                    python3 keeper-bench-benchmarking/benchmark.py --keeper-type $KEEPER_TYPE --keeper-count 3 --cpu-keeper $1 --memory-keeper $2 --host-info "m6a.24xlarge_no_extra_info" --config_concurrency $CONFIG_CONCURRENCY --config_iterations $CONFIG_ITERATIONS
+                    python3 clickhouse-docker-cluster/docker-compose.py --cluster-directory cluster_1 --action clean
+                    sleep 5
+                done
+            done
+        done
+    done
+done
+

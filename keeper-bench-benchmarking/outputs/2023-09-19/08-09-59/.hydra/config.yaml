@@ -1,0 +1,41 @@
+experiment:
+  num_repeat: 10
+  config_concurrency:
+  - 3
+  - 10
+  - 100
+  - 500
+  config_iterations:
+  - 10000
+  - 160000
+  - 1280000
+  - 6400000
+  workload_file:
+  - multi_write_70_pct.yaml.jinja
+  - multi_write_only.yaml.jinja
+keeper:
+  host_info: default
+  keeper_type:
+  - zookeeper
+  - chkeeper
+  keeper_count: 3
+  resources:
+  - keeper_cpu: 1
+    keeper_memory: 2048m
+    keeper_jvm_memory: 1024m
+  - keeper_cpu: 3
+    keeper_memory: 2048m
+    keeper_jvm_memory: 1024m
+  - keeper_cpu: 6
+    keeper_memory: 6144m
+    keeper_jvm_memory: 3072m
+  - keeper_cpu: 16
+    keeper_memory: 6144m
+    keeper_jvm_memory: 3072m
+  no_keeper_prometheus_metric: true
+environment:
+  auto_keeper_ports: true
+  chkeeper_ports:
+  - 19181
+  zookeper_ports:
+  - 12181

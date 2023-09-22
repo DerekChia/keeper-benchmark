@@ -1,0 +1,51 @@
+concurrency: {{ config_concurrency }}
+iterations: {{ config_iterations }}
+delay: 4
+timelimit: 3000
+continue_on_errors: true
+
+connections:
+  operation_timeout_ms: 3000
+  connection_timeout_ms: 40000
+
+  {%- for k in range(num_connections) %}
+  connection:
+    sessions: 1
+    host: "localhost:{{ keeper_ports[k] }}"
+  {% endfor %}
+
+generator:
+  # start of setup
+  setup:
+    node:
+      name: "test"
+    node:
+      name: "test1"
+      data: "somedata"
+      node:
+        repeat: 10
+        name:
+          random_string:
+            size: 50
+        data:
+          random_string:
+            size:
+              min_value: 10
+              max_value: 50
+  # end of setup
+  requests:
+    multi:
+      size: 2
+      create:
+        weight: 50
+        path: "/test"
+        name_length: 50
+      set:
+        weight: 50
+        path:
+          children_of: "/test1"
+        data:
+          random_string:
+            size: 50
+output:
+  stdout: true

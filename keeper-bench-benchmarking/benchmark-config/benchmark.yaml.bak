@@ -1,0 +1,107 @@
+concurrency: 80
+iterations: 40000
+delay: 4
+timelimit: 300
+continue_on_errors: true
+
+connections:
+  operation_timeout_ms: 3000
+  connection_timeout_ms: 40000 
+  connection:
+    sessions: 1
+    host: "localhost:12181"
+   
+  connection:
+    sessions: 1
+    host: "localhost:12182"
+   
+  connection:
+    sessions: 1
+    host: "localhost:12183"
+  
+
+generator:
+  # start of setup
+  setup:
+    node:
+      name: "test1"
+    node:
+      name: "test2"
+    node:
+      name: "test3"
+    node:
+      name: "test"
+      data: "somedata"
+      node:
+        repeat: 10
+        name:
+          random_string:
+            size: 15
+        data:
+          random_string:
+            size:
+              min_value: 10
+              max_value: 20
+      node: 
+        repeat: 10
+        node:
+          repeat: 10
+          name:
+            random_string:
+              size: 15
+        name:
+          random_string:
+            size: 15
+        data:
+          random_string:
+            size:
+              min_value: 10
+              max_value: 20
+  # end of setup
+  requests:
+    create: 
+      repeat: 10
+      path: "/test1"
+      name_length: 10 
+      remove_factor: 0.5 
+    multi:
+      size: 64
+      create:
+        repeat: 10
+        path: "/test"
+        name:
+          random_string:
+            size: 20
+        data:
+          random_string:
+            size:
+              min_value: 10
+              max_value: 50
+        remove_factor: 0.8
+      set:
+        repeat: 10
+        weight: 2
+        path: 
+          - "/test1"
+          - "/test2"
+        path:
+          children_of: "/test"
+        data:
+          random_string:
+            size: 10
+    get:
+      repeat: 10
+      path: 
+        - "/test1"
+        - "/test2"
+      path:
+        children_of: "/test"
+    list:
+      repeat: 10
+      path: 
+        - "/test1"
+        - "/test2"
+      path:
+        children_of: "/test"
+output:
+  stdout: true
