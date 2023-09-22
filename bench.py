@@ -9,18 +9,6 @@
 # if __name__ == "__main__":
 #     my_app()
 
-# args = {
-#     'cluster_directory': 'cluster_1', 
-#     'shard': 0, 
-#     'replica': 0, 
-#     'keeper_type': 'chkeeper', 
-#     'keeper_count': 3, 
-#     'keeper_cpu': 1,
-#     'keeper_memory': '2048m',
-#     'keeper_jvm_memory': '1843m' # ignored for chkeeper
-# }
-
-
 ########################################
 ##### Part 0 - get config
 ########################################
@@ -28,10 +16,10 @@ import yaml
 import argparse
 from pathlib import Path
 
-with open(Path(__file__).resolve().parent /'config.yaml', 'r') as file:
-    f = yaml.safe_load(file)
+# with open(Path(__file__).resolve().parent /'config.yaml', 'r') as file:
+#     f = yaml.safe_load(file)
 
-print(f)
+# print(f)
 
 ########################################
 ##### Part 1 - create cluster
@@ -46,8 +34,7 @@ x['replica'] = 0
 x['keeper_type'] = 'zookeeper'
 x['keeper_count'] = 3
 x['keeper_cpu'] = 1
-x['keeper_memory'] = '2048m'
-x['keeper_jvm_memory'] = '1843m'
+x['keeper_memory'] = '1024m'
 x['native_protocol_port'] = 9000
 x['http_api_port'] = 8123
 x['ch_prometheus_port'] = 9363
@@ -56,6 +43,7 @@ x['keeper_internal_replication'] = 'true'
 x['chnode_prefix'] = 'chnode'
 x['cluster_name'] = 'default'
 x['jinja_template_directory'] = 'default'
+x['keeper_extra_memory_percent'] = 20
 
 # values depend on keeper_type
 if x['keeper_type'] == "chkeeper":
@@ -63,53 +51,19 @@ if x['keeper_type'] == "chkeeper":
     x['keeper_port'] = 9181
     x['keeper_version'] = "23.8"
     x['keeper_prometheus_port'] = 9363
+    x['keeper_jvm_memory'] = '0m'
 elif x['keeper_type'] == "zookeeper":
     x['keeper_prefix'] = "zookeeper"
     x['keeper_port'] = 2181
     x['keeper_version'] = "3.8"
     x['keeper_prometheus_port'] = 7000
+    x['keeper_jvm_memory'] = x['keeper_memory']
+    x['keeper_memory'] = f"{int(int(x['keeper_memory'][:-1]) * (x['keeper_extra_memory_percent'] + 100)/100)}m" 
 
-# args = argparse.Namespace()
-# args.cluster_directory = 'cluster_1'
-# args.shard = 0
-# args.replica = 0
-# args.keeper_type = 'zookeeper'
-# args.keeper_count = 3 
-# args.keeper_cpu = 1
-# args.keeper_memory = '2048m'
-# args.keeper_jvm_memory = '1843m' # ignored for chkeeper
-
-# args.native_protocol_port = 9000
-# args.http_api_port = 8123
-# args.ch_prometheus_port = 9363
-# args.keeper_raft_port = 9234
-# args.keeper_internal_replication = 'true'
-
-# args.chnode_prefix = 'chnode'
-# args.cluster_name = 'default'
-# args.jinja_template_directory = 'default'
-
-# setattr(
-#     args,
-#     "cluster_directory",
-#     str(Path(__file__).resolve().parent / args.cluster_directory),
-# )
-
-# # values depend on keeper_type
-# if args.keeper_type == "chkeeper":
-#     setattr(args, "keeper_prefix", "chkeeper")
-#     setattr(args, "keeper_port", 9181)
-#     setattr(args, "keeper_version", "23.8")
-#     setattr(args, "keeper_prometheus_port", 9363)
-# elif args.keeper_type == "zookeeper":
-#     setattr(args, "keeper_prefix", "zookeeper")
-#     setattr(args, "keeper_port", 2181)
-#     setattr(args, "keeper_version", "3.8")
-#     setattr(args, "keeper_prometheus_port", 7000)
-
+print(x)
 docker_compose.clean()
 generate.generate_cluster(x)
-docker_compose.up(cluster_directory=Path(__file__).resolve().parent / 'cluster_1')
+docker_compose.up(x['cluster_directory'])
 
 # ########################################
 # ##### pause for cluster to be ready
