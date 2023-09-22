@@ -153,6 +153,13 @@ def benchmark(total_expected_requests: int, no_keeper_prometheus_metric: bool):
         stdout_lines.append(line_decoded)
         print(f"{line_decoded}", end="")
 
+        if any(e in line_decoded.lower() for e in ["exception", "broken"]):
+            exception_message = line_decoded.strip()
+            break
+        elif "---- Cleaning up test data ----" in line_decoded:
+            is_cleaning = True
+            break
+
         # scrape every 1 second
         if (time.time() - scrape_time) >= 1:
             each_metric_scrape = []
@@ -163,16 +170,6 @@ def benchmark(total_expected_requests: int, no_keeper_prometheus_metric: bool):
                 each_metric_scrape.extend(scrape_zk_result)
             benchmark_metric_result.extend(each_metric_scrape)
             scrape_time = time.time()
-
-        if any(e in line_decoded.lower() for e in ["exception", "broken"]):
-            exception_message = line_decoded.strip()
-            break
-        elif "---- Cleaning up test data ----" in line_decoded:
-            is_cleaning = True
-            break
-
-    # print("no_keeper_prometheus_metric", no_keeper_prometheus_metric)
-    # print("benchmark_metric_result", benchmark_metric_result)
 
     keeper_bench_output = {}
     if is_cleaning:

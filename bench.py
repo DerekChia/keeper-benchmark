@@ -33,13 +33,11 @@ x['shard'] = 0
 x['replica'] = 0
 x['keeper_type'] = 'zookeeper'
 x['keeper_count'] = 3
-x['keeper_cpu'] = 1
-x['keeper_memory'] = '1024m'
+x['keeper_cpu'] = 16
+x['keeper_memory'] = '6144m'
 x['native_protocol_port'] = 9000
 x['http_api_port'] = 8123
-# x['ch_prometheus_port'] = 9363
 x['keeper_raft_port'] = 9234
-# x['keeper_internal_replication'] = 'true'
 x['chnode_prefix'] = 'chnode'
 x['cluster_name'] = 'default'
 x['jinja_template_directory'] = 'default'
@@ -76,8 +74,8 @@ time.sleep(5)
 ########################################
 
 x['host_info'] = 'm6a.24xlarge'
-x['config_concurrency'] = 500
-x['config_iterations'] = 10000
+x['config_concurrency'] = 300
+x['config_iterations'] = 10240000
 x['workload_file'] = 'multi_write_70_pct.yaml.jinja'
 x['no_keeper_prometheus_metric'] = False
 

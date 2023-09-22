@@ -10,17 +10,12 @@ keeper:
   resources:
     - "keeper_cpu": 1
       "keeper_memory": "2048m"
-      "keeper_jvm_memory": "2048m" # 90% 
     - "keeper_cpu": 3
       "keeper_memory": "2048m"
-      "keeper_jvm_memory": "1843m"
     - "keeper_cpu": 6
       "keeper_memory": "6144m"
-      "keeper_jvm_memory": "5529m"
     - "keeper_cpu": 16
-      "keeper_chk_container_memory": "6144m" # chk container
-      "keeper_zk_container_memory": "7372m" # zk container, 20% more from zk_jvm_memory
-      "keeper_zk_jvm_memory": "6144m"
+      "keeper_memory": "6144m"
   no_keeper_prometheus_metric: true # change back to false to capture prom metrics
 environment:
   auto_keeper_ports: true # port number will increase sequentially e.g. 19181, 19182, 19183 ...

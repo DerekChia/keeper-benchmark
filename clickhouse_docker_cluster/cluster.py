@@ -116,7 +116,6 @@ class Cluster:
     def generate_obj(self):
         """Generate objects"""
         self._keepers = self.generate_keeper_obj()
-        # self._chnodes = self.generate_chnode_obj()
 
     def objs_to_context(self):
         context = {
@@ -132,30 +131,9 @@ class Cluster:
             "keeper_prometheus_ports_external": [
                 keeper.keeper_prometheus_port_external for keeper in self._keepers
             ],
-            # "keeper_internal_replications": [
-            #     keeper.internal_replication for keeper in self._keepers
-            # ],
             "keeper_config_directorys": [
                 keeper.config_directory for keeper in self._keepers
             ],
-            # "node_hostnames": [chnode.hostname for chnode in self._chnodes],
-            # "node_versions": [chnode.version for chnode in self._chnodes],
-            # "node_shard_ids": [chnode.shard_id for chnode in self._chnodes],
-            # "node_replica_ids": [chnode.replica_id for chnode in self._chnodes],
-            # "node_cpus": [chnode.cpu for chnode in self._chnodes],
-            # "node_memorys": [chnode.memory for chnode in self._chnodes],
-            # "node_native_protocol_ports_external": [
-            #     chnode.native_protocol_port_external for chnode in self._chnodes
-            # ],
-            # "node_http_api_ports_external": [
-            #     chnode.http_api_port_external for chnode in self._chnodes
-            # ],
-            # "node_prometheus_ports_external": [
-            #     chnode.ch_prometheus_port_external for chnode in self._chnodes
-            # ],
-            # "node_config_directorys": [
-            #     chnode.config_directory for chnode in self._chnodes
-            # ],
         }
         return context
 
@@ -200,13 +178,10 @@ class Cluster:
             self.objs_to_context()
         )  # duplicated, to update - let's not generated twice
         keeper_hostnames = context["keeper_hostnames"]
-        # node_hostnames = context["node_hostnames"]
-        # all_hostnames = keeper_hostnames + node_hostnames
-        all_hostnames = keeper_hostnames
 
         if self.args['keeper_type'] == "chkeeper":
             # [keeper+chnode] create configs directory using hostname
-            for hostname in all_hostnames:
+            for hostname in keeper_hostnames:
                 Path(f"{self.args['cluster_directory']}/configs/{hostname}").mkdir(
                     parents=True, exist_ok=True
                 )
@@ -223,14 +198,6 @@ class Cluster:
             Path(f"{self.args['cluster_directory']}/configs/grafana/dashboards").mkdir(
                 parents=True, exist_ok=True
             )
-
-            # # [chnode] others.xml
-            # filename = f"{Path(__file__).parent}/templates/configs/others.xml"
-            # for hostname in node_hostnames:
-            #     filename_generated = (
-            #         f"{self.args['cluster_directory']}/configs/{hostname}/others.xml"
-            #     )
-            #     shutil.copyfile(filename, filename_generated)
 
             # [keeper] keeper_config.xml
             template = environment.get_template("keeper_config.xml.jinja")
