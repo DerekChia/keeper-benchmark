@@ -1,5 +1,5 @@
 concurrency: 500
-iterations: 6400000
+iterations: 10000
 delay: 4
 timelimit: 3000
 continue_on_errors: true

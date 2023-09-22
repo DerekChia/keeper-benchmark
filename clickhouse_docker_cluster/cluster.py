@@ -19,7 +19,7 @@ class Keeper:
         keeper_raft_port_external,
         keeper_prometheus_port,
         keeper_prometheus_port_external,
-        internal_replication,
+        # internal_replication,
         cluster_directory,
     ):
         self.hostname = hostname
@@ -34,7 +34,7 @@ class Keeper:
         self.keeper_raft_port_external = keeper_raft_port_external
         self.keeper_prometheus_port = keeper_prometheus_port
         self.keeper_prometheus_port_external = keeper_prometheus_port_external
-        self.internal_replication = internal_replication
+        # self.internal_replication = internal_replication
         self.config_directory = str(Path(cluster_directory) / "configs" / hostname)
 
     def __repr__(self):
@@ -112,7 +112,7 @@ class Cluster:
             keeper_prometheus_port_external = (
                 self.args['keeper_prometheus_port'] + count - 1 + 10_000
             )
-            internal_replication = self.args['keeper_internal_replication']
+            # internal_replication = self.args['keeper_internal_replication']
             cluster_directory = self.args['cluster_directory']
             k = Keeper(
                 hostname,
@@ -127,7 +127,7 @@ class Cluster:
                 keeper_raft_port_external,
                 keeper_prometheus_port,
                 keeper_prometheus_port_external,
-                internal_replication,
+                # internal_replication,
                 cluster_directory,
             )
             keepers.append(k)
@@ -213,9 +213,9 @@ class Cluster:
             "keeper_prometheus_ports_external": [
                 keeper.keeper_prometheus_port_external for keeper in self._keepers
             ],
-            "keeper_internal_replications": [
-                keeper.internal_replication for keeper in self._keepers
-            ],
+            # "keeper_internal_replications": [
+            #     keeper.internal_replication for keeper in self._keepers
+            # ],
             "keeper_config_directorys": [
                 keeper.config_directory for keeper in self._keepers
             ],

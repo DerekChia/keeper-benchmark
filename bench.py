@@ -37,9 +37,9 @@ x['keeper_cpu'] = 1
 x['keeper_memory'] = '1024m'
 x['native_protocol_port'] = 9000
 x['http_api_port'] = 8123
-x['ch_prometheus_port'] = 9363
+# x['ch_prometheus_port'] = 9363
 x['keeper_raft_port'] = 9234
-x['keeper_internal_replication'] = 'true'
+# x['keeper_internal_replication'] = 'true'
 x['chnode_prefix'] = 'chnode'
 x['cluster_name'] = 'default'
 x['jinja_template_directory'] = 'default'
@@ -65,28 +65,34 @@ docker_compose.clean()
 generate.generate_cluster(x)
 docker_compose.up(x['cluster_directory'])
 
-# ########################################
-# ##### pause for cluster to be ready
-# ########################################
-# import time
-# time.sleep(5)
+########################################
+##### pause for cluster to be ready
+########################################
+import time
+time.sleep(5)
 
-# ########################################
-# ##### Part 2 - benchmarking
-# ########################################
+########################################
+##### Part 2 - benchmarking
+########################################
 
-# from benchmark import start
-# args = argparse.Namespace()
-# args.keeper_type = 'zookeeper'
-# args.keeper_count = 3
-# args.keeper_cpu = 1
-# args.keeper_memory = '2048m'
-# args.keeper_jvm_memory = '1843m' # ignored for chkeeper
-# args.host_info = 'm6a.24xlarge'
-# args.config_concurrency = 500
-# args.config_iterations = 6400000
-# args.workload_file = 'multi_write_70_pct.yaml.jinja'
-# args.no_keeper_prometheus_metric = False
+x['host_info'] = 'm6a.24xlarge'
+x['config_concurrency'] = 500
+x['config_iterations'] = 10000
+x['workload_file'] = 'multi_write_70_pct.yaml.jinja'
+x['no_keeper_prometheus_metric'] = False
 
-# start(args)
-# docker_compose.clean()
+from benchmark import start
+args = argparse.Namespace()
+args.keeper_type = x['keeper_type']
+args.keeper_count = x['keeper_count']
+args.keeper_cpu = x['keeper_cpu']
+args.keeper_memory = x['keeper_memory']
+args.keeper_jvm_memory = x['keeper_jvm_memory']
+args.host_info = x['host_info']
+args.config_concurrency = x['config_concurrency']
+args.config_iterations = x['config_iterations']
+args.workload_file = x['workload_file']
+args.no_keeper_prometheus_metric = x['no_keeper_prometheus_metric']
+
+start(args)
+docker_compose.clean()
