@@ -62,13 +62,13 @@ generator:
       path:
         children_of: "/test"
     create:
-      weight: 5
+      weight: 2
       repeat: 10
       path: "/test1"
       name_length: 10
       remove_factor: 0.8
     set:
-      weight: 5
+      weight: 2
       repeat: 10
       path:
         - "/test1"
@@ -79,7 +79,7 @@ generator:
         random_string:
           size: 10
     multi:
-      weight: 70
+      weight: 75
       get:
         repeat: 10
         path:

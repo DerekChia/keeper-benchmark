@@ -152,24 +152,31 @@ def benchmark(total_expected_requests: int, no_keeper_prometheus_metric: bool):
         line_decoded = line.decode('utf-8')
         stdout_lines.append(line_decoded)
         print(f"{line_decoded}", end="")
+        logger.info(f"{line_decoded.strip()}")
 
         if any(e in line_decoded.lower() for e in ["exception", "broken"]):
             exception_message = line_decoded.strip()
+            logger.error(exception_message)
             break
         elif "---- Cleaning up test data ----" in line_decoded:
             is_cleaning = True
             break
 
-        # scrape every 1 second
-        if (time.time() - scrape_time) >= 1:
-            each_metric_scrape = []
-            scrape_cadvisor_result = scrape_cadvisor_metric()
-            each_metric_scrape.extend(scrape_cadvisor_result)
-            if not no_keeper_prometheus_metric:
-                scrape_zk_result = scrape_zk_metric()
-                each_metric_scrape.extend(scrape_zk_result)
-            benchmark_metric_result.extend(each_metric_scrape)
-            scrape_time = time.time()
+        try:
+            # scrape every 1 second
+            if (time.time() - scrape_time) >= 1:
+                each_metric_scrape = []
+                scrape_cadvisor_result = scrape_cadvisor_metric()
+                each_metric_scrape.extend(scrape_cadvisor_result)
+                if not no_keeper_prometheus_metric:
+                    scrape_zk_result = scrape_zk_metric()
+                    each_metric_scrape.extend(scrape_zk_result)
+                benchmark_metric_result.extend(each_metric_scrape)
+                scrape_time = time.time()
+        except Exception:
+            exception_message = f"keeper is unavailable for scraping"
+            logger.error(exception_message)
+            break
 
     keeper_bench_output = {}
     if is_cleaning:
@@ -188,62 +195,17 @@ def save_benchmark_metric_result(benchmark_metric_result):
     """
     save_benchmark_metric_result
     """
-    # for dict_ in benchmark_metric_result:
-    #     if "host_info" in dict_:
-    #         del dict_["host_info"]
-
-    # data = [list(metric_data.values()) for metric_data in benchmark_metric_result]
-
     data = []
     for metric in benchmark_metric_result:
-        # logger.info(f"{metric['metric']} {metric['value']}")
         data.append([metric['experiment_id'], metric['benchmark_id'], metric['container_hostname'], metric['metric'], metric['value'], metric['prometheus_ts']])
 
     client = get_clickhouse_connect_client()
 
-    # start = 0
-    # end = len(data)
-    # step = 10
-    # for i in range(start, end, step):
-    #     x = i
-    #     for _ in data[x:x+step]:
-    #         logger.info(_)
-    #         logger.info(f"{_[-2]}, {type(_[-2])}")
-    #     logger.info(" ")
-    #     client.insert(f"{TABLE_BENCH_METRIC}", data[x:x+step], column_names=["experiment_id", "benchmark_id", "container_hostname", "metric", "value", "prometheus_ts"])
-
-    client.insert(f"{TABLE_BENCH_METRIC}", data, column_names=["experiment_id", "benchmark_id", "container_hostname", "metric", "value", "prometheus_ts"])
-
-    # benchmark_id = str(benchmark_metric_result[0]["benchmark_id"])
-
-    # result_memory = client.query_df(
-    #     f"""select
-    #             container_hostname, 
-    #             formatReadableSize(avg(value)) as avg_memory, 
-    #             formatReadableSize(min(value)) as min_memory, 
-    #             formatReadableSize(max(value)) as max_memory, 
-    #             formatReadableSize(median(value)) as median_memory 
-    #         from {TABLE_BENCH_METRIC} 
-    #         where metric = 'container_memory_working_set_bytes' and benchmark_id = '{benchmark_id}' 
-    #         group by container_hostname 
-    #         order by container_hostname
-    #         """
-    # )
-
-    # print(result_memory)
-
-    # result_cpu = client.query_df(
-    #     f"""select 
-    #             container_hostname, 
-    #             max(value) as max_cpu 
-    #         from {TABLE_BENCH_METRIC} 
-    #         where metric = 'container_cpu_system_seconds_total' and benchmark_id = '{benchmark_id}' 
-    #         group by container_hostname 
-    #         order by container_hostname"""
-    # )
-
-    # print(result_cpu)
-
+    try:
+        client.insert(f"{TABLE_BENCH_METRIC}", data, column_names=["experiment_id", "benchmark_id", "container_hostname", "metric", "value", "prometheus_ts"])
+    except Exception as e:
+        logger.error(e)
+        raise
 
 def save_benchmark_info_result(experiment_id: str, benchmark_id: str, benchmark_ts: int, keeper_bench_config: dict, keeper_bench_output: dict, exception_message: str) -> None:
     """
@@ -291,23 +253,12 @@ def save_benchmark_info_result(experiment_id: str, benchmark_id: str, benchmark_
         client.insert(f"{TABLE_BENCH_INFO}", [list(result.values())], column_names=list(result.keys()))
     except Exception as e:
         logger.error(e)
-        raise e
-
-    # query = client.query_df(f"""select * from {TABLE_BENCH_INFO} where benchmark_id = '{str(benchmark_metric_result[0]['benchmark_id'])}' """)
-    # print(query)
+        raise
 
 def start(args):
-    # if args.config:
-    #     try:
-    #         with open(Path(__file__).resolve().parent / args.config) as f:
-    #             config = yaml.safe_load(f)
-    #         args = config_to_args(args_config)
-    #     except Exception:
-    #         logging.info("Unable to load config.yaml file")
-
     # Additional config and generate keeper bench yaml file
     keeper_bench_config = create_keeper_bench_config(args)
-    print(f"keeper_bench_config: {keeper_bench_config}")
+    logger.info(f"keeper_bench_config: {keeper_bench_config}")
     generate_keeper_bench_yaml(keeper_bench_config)
 
     # 
@@ -325,16 +276,11 @@ def start(args):
     logger.info(f"Completed experiment {experiment_id} and benchmark {benchmark_id}")
 
     benchmark_ts = int(sorted([metric['prometheus_ts'] for metric in benchmark_metric_result])[0] / 1000.0)
-    
-    # for metric in benchmark_metric_result:
-    #     for v in metric.values():
-    #         if v is None:
-    #             logger.error(str(metric))
 
     if is_successful:
-        logger.info("Ok")
+        logger.info("OK")
     else:
-        logger.error("Not ok")
+        logger.error("Not OK")
 
     # log to info    
     save_benchmark_info_result(experiment_id, benchmark_id, benchmark_ts, keeper_bench_config, keeper_bench_output, exception_message)
@@ -345,8 +291,6 @@ def start(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # read config file by default
-    # parser.add_argument("--config", type=str, help="config", required=False, default='config.yaml')
     # experiment
     parser.add_argument("--num-repeat", type=int, help="num_repeat", required=False, default=10)
     parser.add_argument("--config-concurrency", type=int, help="config_concurrency", required=False, default=3)
