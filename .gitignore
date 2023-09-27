@@ -1,6 +1,4 @@
 docker_cluster/
-keeper-bench-config/
-logs/
 .vscode
 .DS_Store
 keeper-bench
