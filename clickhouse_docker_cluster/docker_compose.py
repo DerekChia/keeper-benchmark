@@ -1,7 +1,6 @@
-from pathlib import Path
-import argparse
 import os
-
+import argparse
+from pathlib import Path
 
 def up(cluster_directory):
     """
@@ -12,19 +11,7 @@ def up(cluster_directory):
 
 def clean():
     """
-    Remove all containers and volumes
+    Remove all containers and volumes related to the experiment
     """
-    os.system("docker ps -aq | xargs docker stop | xargs docker rm")
-    os.system("docker volume prune -a -f")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cluster-directory", type=str, default="cluster_1")
-    parser.add_argument("--action", type=str)
-    args = parser.parse_args()
-
-    if args.action == "up":
-        up(args.cluster_directory)
-    elif args.action == "clean":
-        clean()
+    os.system("docker ps -aq --filter 'label=type=keeper_bench_suite' | xargs docker stop | xargs docker rm -v")
+    os.system("docker volume ls --filter 'label=type=keeper_bench_suite' -q | xargs docker volume rm")

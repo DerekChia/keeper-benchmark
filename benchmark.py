@@ -151,11 +151,10 @@ def benchmark(total_expected_requests: int, no_keeper_prometheus_metric: bool):
             break
         line_decoded = line.decode('utf-8')
         stdout_lines.append(line_decoded)
-        print(f"{line_decoded}", end="")
-        logger.info(f"{line_decoded.strip()}")
+        logger.info(f"{line_decoded.rstrip()}")
 
         if any(e in line_decoded.lower() for e in ["exception", "broken"]):
-            exception_message = line_decoded.strip()
+            exception_message = line_decoded.rstrip()
             logger.error(exception_message)
             break
         elif "---- Cleaning up test data ----" in line_decoded:
@@ -261,28 +260,29 @@ def start(args):
     logger.info(f"keeper_bench_config: {keeper_bench_config}")
     generate_keeper_bench_yaml(keeper_bench_config)
 
-    # 
+    # generate ids
     experiment_id = get_experiment_id(keeper_bench_config)
     benchmark_id = str(uuid.uuid4())
 
     logger.info(f"Starting experiment {experiment_id} and benchmark {benchmark_id}")
 
+    # start benchmark
     _ = benchmark(keeper_bench_config['config_iterations'], keeper_bench_config['no_keeper_prometheus_metric'])
     (keeper_bench_output, benchmark_metric_result, is_successful, exception_message) = _
 
+    # add attributes to result
     for metric in benchmark_metric_result:
         metric.update({"experiment_id": experiment_id, "benchmark_id": benchmark_id, "host_info": keeper_bench_config["host_info"]})
 
     logger.info(f"Completed experiment {experiment_id} and benchmark {benchmark_id}")
-
-    benchmark_ts = int(sorted([metric['prometheus_ts'] for metric in benchmark_metric_result])[0] / 1000.0)
 
     if is_successful:
         logger.info("OK")
     else:
         logger.error("Not OK")
 
-    # log to info    
+    # log to info
+    benchmark_ts = int(sorted([metric['prometheus_ts'] for metric in benchmark_metric_result])[0] / 1000.0)
     save_benchmark_info_result(experiment_id, benchmark_id, benchmark_ts, keeper_bench_config, keeper_bench_output, exception_message)
     
     # log to metric

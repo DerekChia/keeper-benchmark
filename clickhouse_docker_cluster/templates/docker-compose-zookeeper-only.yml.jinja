@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     image: zookeeper:{{ keeper_versions[k] }}
     labels:
-      - "type=experiment"
+      - "type=keeper_bench_suite"
     cpus: {{ keeper_cpus[k] }}
     mem_limit: {{ keeper_memorys[k] }}
     ulimits:
@@ -29,6 +29,8 @@ services:
 
   cadvisor: 
     image: gcr.io/cadvisor/cadvisor # gcr.io/cadvisor/cadvisor-arm64:0.99-porterdavid OR gcr.io/cadvisor/cadvisor
+    labels:
+      - "type=keeper_bench_suite"
     container_name: cadvisor
     privileged: true
     ports: 
@@ -44,6 +46,8 @@ services:
   
   redis: 
     image: redis:latest 
+    labels:
+      - "type=keeper_bench_suite"
     container_name: redis 
     ports: 
       - 6379:6379 

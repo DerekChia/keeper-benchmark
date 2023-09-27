@@ -27,7 +27,7 @@ def create_keeper_bench_config(args):
         keeper_ports = [str(19181 + x) for x in range(args.keeper_count)]
     elif args.keeper_type == "zookeeper":
         keeper_ports = [str(12181 + x) for x in range(args.keeper_count)]
-
+    
     keeper_bench_config = {
         "num_connections": args.keeper_count,
         "keeper_type": args.keeper_type,
