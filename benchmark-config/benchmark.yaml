@@ -24,51 +24,74 @@ generator:
   # start of setup
   setup:
     node:
-      name: "test"
-    node:
       name: "test1"
+    node:
+      name: "test2"
+    node:
+      name: "test3"
+    node:
+      name: "test"
       data: "somedata"
       node:
         repeat: 10
         name:
           random_string:
-            size: 50
+            size: 15
         data:
           random_string:
             size:
               min_value: 10
-              max_value: 50
+              max_value: 20
+      node:
+        repeat: 10
+        node:
+          repeat: 10
+          name:
+            random_string:
+              size: 15
+        name:
+          random_string:
+            size: 15
+        data:
+          random_string:
+            size:
+              min_value: 10
+              max_value: 20
   # end of setup
   requests:
     list:
       weight: 20
+      repeat: 10
       path:
-        children_of: "/test1"
+        - "/test1"
+        - "/test2"
+      path:
+        children_of: "/test"
     create:
-      weight: 5
-      path: "/test"
-      name_length: 50
+      weight: 2
+      repeat: 10
+      path: "/test1"
+      name_length: 10
       remove_factor: 0.8
     set:
-      weight: 5
+      weight: 2
+      repeat: 10
       path:
-        children_of: "/test1"
+        - "/test1"
+        - "/test2"
+      path:
+        children_of: "/test"
       data:
         random_string:
           size: 10
     multi:
-      weight: 70
-      size: 2
-      create:
-        weight: 50
-        path: "/test"
-        name_length: 50
-      set:
-        weight: 50
+      weight: 75
+      get:
+        repeat: 10
         path:
-          children_of: "/test1"
-        data:
-          random_string:
-            size: 50
+          - "/test1"
+          - "/test2"
+        path:
+          children_of: "/test"
 output:
   stdout: true
