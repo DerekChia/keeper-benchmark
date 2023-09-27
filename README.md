@@ -2,7 +2,7 @@
 This respository offers an easy way to benchmark the performance of ClickHouse Keeper versus Zookeeper.
 
 ### Getting Started
-Before we begin, we will need to create two tables to store information and metrics about the benchmark. After every each benchmark run, the script will write metrics collected into ClickHouse. To configure the connection, please edit the `.env` file accordingly.
+Before we begin, we will need to create two tables to store information and metrics about the benchmark. After every each benchmark run, the script will write metrics collected into ClickHouse. To configure the connection, please edit the `.env_template` file accordingly and save it as `.env`.
 
 Info table
 ```

@@ -2,6 +2,7 @@ docker_cluster/
 logs/
 .vscode
 .DS_Store
+keeper-bench
 
 # exclude everything
 cluster/*
