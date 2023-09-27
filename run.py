@@ -137,7 +137,7 @@ def benchmark(total_expected_requests: int, no_keeper_prometheus_metric: bool):
         [
             f"{Path(__file__).resolve().parent}/keeper-bench", 
             "--config",
-            f"{Path(__file__).resolve().parent}/benchmark-config/benchmark.yaml",
+            f"{Path(__file__).resolve().parent}/keeper-bench-config/benchmark.yaml",
         ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
 
