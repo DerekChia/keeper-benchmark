@@ -1,5 +1,5 @@
 # Keeper Bench Suite
-This respository offers an easy way to benchmark the performance of ClickHouse Keeper and Zookeeper using the [keeper-bench](https://github.com/ClickHouse/ClickHouse/tree/master/utils/keeper-bench) tool. It generates containers with different resources and sends the same workload for ClickHouse Keeper and Zookeeper. 
+This respository offers an easy way to benchmark the performance of ClickHouse Keeper and Zookeeper using the [keeper-bench](https://github.com/ClickHouse/ClickHouse/tree/master/utils/keeper-bench) tool. It generates containers with different resources and sends the same workload for ClickHouse Keeper and Zookeeper. During the benchmark, the script also scrapes container metrics through cAdvisor and output of `mntr`. 
 
 ### Getting Started
 Before we begin, we will need to create two tables to store information and metrics about the benchmark. After every each benchmark run, the script will write metrics collected into ClickHouse. To configure the connection, please edit the `.env_template` file accordingly and save it as `.env`.
