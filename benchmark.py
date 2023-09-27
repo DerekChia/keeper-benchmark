@@ -12,12 +12,15 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict
 import logging
+from dotenv import load_dotenv
 
 from utils import get_clickhouse_connect_client, create_keeper_bench_config, generate_keeper_bench_yaml, get_experiment_id
 
 LOGGER_FILENAME = f"{Path(__file__).resolve().parent}/logs/log.log"
-TABLE_BENCH_INFO = "keeper_bench_info"
-TABLE_BENCH_METRIC = "keeper_bench_metric"
+
+load_dotenv()
+TABLE_BENCH_INFO = os.getenv("table_name_info")
+TABLE_BENCH_METRIC = os.getenv("table_name_metric")
 
 # Logging
 logging.basicConfig(filename=LOGGER_FILENAME, format="%(asctime)s %(levelname)s %(message)s", filemode='a')
@@ -303,7 +306,7 @@ if __name__ == "__main__":
     parser.add_argument("--keeper-cpu", type=int, help="keeper_cpu", required=False)
     parser.add_argument("--keeper-memory", type=str, help="keeper_memory", required=False)
     parser.add_argument("--keeper-jvm-memory", type=str, help="keeper_jvm_memory", required=False)
-    parser.add_argument("--no-keeper-prometheus-metric", required=False, action="store_true") # true if flag is enabled
+    parser.add_argument("--no-keeper-prometheus-metric", required=False, action="store_true")
 
     parser.add_argument("--chkeeper_ports", nargs='+', help='chkeeper ports', required=False)
     parser.add_argument("--zookeeper_ports", nargs='+', help='zookeeper ports', required=False)

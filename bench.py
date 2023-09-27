@@ -46,7 +46,7 @@ for combination in itertools.product(num_repeat, config_concurrency, config_iter
 ########################################
 for experiment_config in combinations[:10]:
     cluster_config = {}
-    cluster_config['cluster_directory'] = Path(__file__).resolve().parent / 'cluster_1'
+    cluster_config['cluster_directory'] = Path(__file__).resolve().parent / 'docker_cluster' / 'cluster_1'
     cluster_config['shard'] = 0 # remove?
     cluster_config['replica'] = 0 # remove?
     cluster_config['keeper_type'] = experiment_config['keeper_type']
