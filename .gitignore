@@ -1,12 +1,6 @@
-keeper-bench
-keeper-bench-new
-keeper-bench-mac-m1
-
+docker_cluster/
 logs/
-cluster_*
 .vscode
-outputs/
-
 .DS_Store
 
 # exclude everything

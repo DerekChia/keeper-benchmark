@@ -135,7 +135,7 @@ def benchmark(total_expected_requests: int, no_keeper_prometheus_metric: bool):
     # start keeper-bench process
     p = subprocess.Popen(
         [
-            f"{Path(__file__).resolve().parent}/keeper-bench",  # keeper-bench-mac-m1 / keeper-bench
+            f"{Path(__file__).resolve().parent}/keeper-bench", 
             "--config",
             f"{Path(__file__).resolve().parent}/benchmark-config/benchmark.yaml",
         ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT

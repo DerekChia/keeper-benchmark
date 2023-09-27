@@ -212,3 +212,10 @@ class Cluster:
                 )
                 with open(filename_generated, mode="w", encoding="utf-8") as f:
                     f.write(content)
+
+def generate(args):
+    c = Cluster(args)
+    c.prepare()
+    c.generate_obj()
+    c.generate_docker_compose()
+    c.generate_config()

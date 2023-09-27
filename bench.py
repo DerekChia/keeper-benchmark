@@ -9,7 +9,7 @@ import itertools
 from pathlib import Path
 
 from benchmark import start
-from clickhouse_docker_cluster import docker_compose, generate
+from clickhouse_docker_cluster import cluster, docker_compose
 
 try:
     with open(Path(__file__).resolve().parent /'config.yaml', 'r') as file:
@@ -80,7 +80,7 @@ for experiment_config in combinations[:10]:
     ##### Part 1.1 - create cluster
     ########################################
     docker_compose.clean()
-    generate.generate_cluster(cluster_config)
+    cluster.generate(cluster_config)
     docker_compose.up(cluster_config['cluster_directory'])
 
     # wait for cluster to be ready
