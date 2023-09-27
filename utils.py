@@ -42,14 +42,14 @@ def generate_keeper_bench_yaml(keeper_bench_config):
     2. Refer to a template and generate keeper bench yaml
     """
     # Environment
-    environment = Environment(loader=FileSystemLoader(f"{Path(__file__).parent}/templates/"))
+    environment = Environment(loader=FileSystemLoader(f"{Path(__file__).parent}/keeper-bench-configs/"))
 
     template = environment.get_template(keeper_bench_config['workload_file'])
 
     # Generate yaml file
     content = template.render(keeper_bench_config)
     filename_generated = (
-        f"{Path(__file__).resolve().parent}/benchmark-config/benchmark.yaml"
+        f"{Path(__file__).resolve().parent}/keeper-bench-config/benchmark.yaml"
     )
     print("filename_generated: " + filename_generated)
     with open(filename_generated, mode="w", encoding="utf-8") as f:
